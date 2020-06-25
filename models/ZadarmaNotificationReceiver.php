@@ -11,8 +11,8 @@ class ZadarmaNotificationReceiver
             $mentor = UserAccount::findOne(['phone' => $params['caller_id']]);
             $user = UserAccount::findOne(['phone' => $params['called_did']]);
         } elseif ($params['event'] == 'NOTIFY_OUT_END') {
-            $mentor = UserAccount::findOne(['phone' => $params['caller_id']]);
-            $user = UserAccount::findOne(['phone' => $params['destination']]);
+            $mentor = UserAccount::findOne(['phone' => $params['destination']]);
+            $user = UserAccount::findOne(['phone' => $params['caller_id']]);
         } else {
             return false;
         }
@@ -30,7 +30,11 @@ class ZadarmaNotificationReceiver
                 'duration' => $params['duration']
             ]
         );
-        $call->save();
-        return true;
+
+        if ($call->save()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

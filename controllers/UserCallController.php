@@ -49,7 +49,9 @@ class UserCallController extends Controller
                     ]
                 );
 
-                $call->save();
+                if (!$call->save()) {
+                    return 'Failed to save statistic';
+                }
             }
             $this->goHome();
         } else {
@@ -66,9 +68,9 @@ class UserCallController extends Controller
         }
 
         if (ZadarmaNotificationReceiver::saveCall($request->post())) {
-            return 'Failed to handle webhook';
+            return 'Success';
         } else {
-            return 'success';
+            return 'Failed to handle webhook';
         }
     }
 

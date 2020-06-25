@@ -28,11 +28,11 @@ class ZadarmaAPIRequester
         $jsonResult = curl_exec($ch);
         $error = curl_error($ch);
 
+        curl_close($ch);
+
         if ($error) {
             return false;
         }
-
-        curl_close($ch);
 
         $arrResult = json_decode($jsonResult, true);
 
