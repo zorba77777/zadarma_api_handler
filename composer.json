@@ -20,7 +20,8 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "zadarma/user-api-v1": "^1.1",
       "ext-curl": "*",
-      "ext-json": "*"
+      "ext-json": "*",
+        "php-curl-class/php-curl-class": "^8.8"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

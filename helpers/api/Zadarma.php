@@ -2,6 +2,8 @@
 
 namespace app\helpers\api;
 
+use Curl\Curl;
+
 class Zadarma
 {
     const BASE_URL_PART = 'https://api.zadarma.com';
@@ -18,21 +20,15 @@ class Zadarma
         $sign = base64_encode(hash_hmac('sha1', self::AVAILABLE_METHODS_URL['getStat'] . $params . md5($params), self::SECRET));
         $headers = array('Authorization: ' . self::KEY . ':' . $sign);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, self::BASE_URL_PART . self::AVAILABLE_METHODS_URL['getStat']);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $curl = new Curl();
+        $curl->setHeader('Authorization', self::KEY . ':' . $sign);
+        $curl->get(self::BASE_URL_PART . self::AVAILABLE_METHODS_URL['getStat']);
 
-        $jsonResult = curl_exec($ch);
-        $error = curl_error($ch);
-
-        curl_close($ch);
-
-        if ($error) {
+        if ($curl->error) {
             return false;
         }
+
+        $jsonResult = $curl->rawResponse;
 
         $arrResult = json_decode($jsonResult, true);
 

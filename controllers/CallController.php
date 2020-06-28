@@ -42,7 +42,7 @@ class CallController extends Controller
                         'sip_id'          => $item['sip'],
                         'created_at'      => $item['callstart'],
                         'city'            => $item['description'],
-                        'success'         => $item['hangupcause'] == '16' ? 1 : 0,
+                        'success'         => $item['hangupcause'] === '16' ? 1 : 0,
                         'cost_per_minute' => $item['cost'],
                         'duration'        => $item['billseconds']
                     ]
@@ -93,7 +93,7 @@ class CallController extends Controller
                 'sip_id'          => $mentor->sip_id,
                 'created_at'      => $params['call_start'],
                 'city'            => null,
-                'success'         => $params['disposition'] == 'answered' ? 1 : 0,
+                'success'         => $params['disposition'] === 'answered' ? 1 : 0,
                 'cost_per_minute' => null,
                 'duration'        => $params['duration']
             ]
