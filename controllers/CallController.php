@@ -2,28 +2,27 @@
 
 namespace app\controllers;
 
-use app\models\UserAccount;
-use app\models\ZadarmaAPIRequester;
-use app\models\ZadarmaNotificationReceiver;
+use app\models\User;
+use app\helpers\api\Zadarma;
 use Yii;
-use app\models\UserCall;
-use app\models\UserCallSearch;
+use app\models\Call;
+use app\models\CallSearch;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 /**
- * UserCallController implements the CRUD actions for UserCall model.
+ * CallController implements the CRUD actions for Call model.
  */
-class UserCallController extends Controller
+class CallController extends Controller
 {
 
     public function actionFetchStat()
     {
-        if ($statsArr = ZadarmaAPIRequester::getStatistic()) {
-            $allCalls = UserCall::find()->all();
+        if ($statsArr = Zadarma::getStatistic()) {
+            $allCalls = Call::find()->all();
             $arrCalls = ArrayHelper::toArray($allCalls, [
-                'app\models\UserCall' => ['id']
+                'app\models\Call' => ['id']
             ]);
             $callIds = ArrayHelper::getColumn($arrCalls, 'id');
 
@@ -32,20 +31,20 @@ class UserCallController extends Controller
                     continue;
                 }
 
-                $mentor = UserAccount::findOne(['sip_id' => $item['sip']]);
-                $user = UserAccount::findOne(['phone' => $item['to']]);
+                $mentor = User::findOne(['sip_id' => $item['sip']]);
+                $user = User::findOne(['phone' => $item['to']]);
 
-                $call = new UserCall(
+                $call = new Call(
                     [
-                        'id' => $item['id'],
-                        'account_id' => $user->id,
-                        'mentor_id' => $mentor->id,
-                        'sip_id' => $item['sip'],
-                        'created_at' => $item['callstart'],
-                        'city' => $item['description'],
-                        'success' => $item['hangupcause'] == '16' ? 1 : 0,
+                        'id'              => $item['id'],
+                        'account_id'      => $user->id,
+                        'mentor_id'       => $mentor->id,
+                        'sip_id'          => $item['sip'],
+                        'created_at'      => $item['callstart'],
+                        'city'            => $item['description'],
+                        'success'         => $item['hangupcause'] == '16' ? 1 : 0,
                         'cost_per_minute' => $item['cost'],
-                        'duration' => $item['billseconds']
+                        'duration'        => $item['billseconds']
                     ]
                 );
 
@@ -67,17 +66,46 @@ class UserCallController extends Controller
             return 'It is not webhook';
         }
 
-        if (ZadarmaNotificationReceiver::saveCall($request->post())) {
+        if ($this->saveCall($request->post())) {
             return 'Success';
         } else {
             return 'Failed to handle webhook';
         }
     }
 
+    private function saveCall($params)
+    {
+        if ($params['event'] === 'NOTIFY_END') {
+            $mentor = User::findOne(['phone' => $params['caller_id']]);
+            $user = User::findOne(['phone' => $params['called_did']]);
+        } elseif ($params['event'] === 'NOTIFY_OUT_END') {
+            $mentor = User::findOne(['phone' => $params['destination']]);
+            $user = User::findOne(['phone' => $params['caller_id']]);
+        } else {
+            return false;
+        }
+
+        $call = new Call(
+            [
+                'id'              => $params['pbx_call_id'],
+                'account_id'      => $user->id,
+                'mentor_id'       => $mentor->id,
+                'sip_id'          => $mentor->sip_id,
+                'created_at'      => $params['call_start'],
+                'city'            => null,
+                'success'         => $params['disposition'] == 'answered' ? 1 : 0,
+                'cost_per_minute' => null,
+                'duration'        => $params['duration']
+            ]
+        );
+
+        return $call->save();
+    }
+
 
     public function actionIndex()
     {
-        $searchModel = new UserCallSearch();
+        $searchModel = new CallSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -87,7 +115,7 @@ class UserCallController extends Controller
     }
 
     /**
-     * Displays a single UserCall model.
+     * Displays a single Call model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -100,13 +128,13 @@ class UserCallController extends Controller
     }
 
     /**
-     * Creates a new UserCall model.
+     * Creates a new Call model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new UserCall();
+        $model = new Call();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -118,7 +146,7 @@ class UserCallController extends Controller
     }
 
     /**
-     * Updates an existing UserCall model.
+     * Updates an existing Call model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -138,7 +166,7 @@ class UserCallController extends Controller
     }
 
     /**
-     * Deletes an existing UserCall model.
+     * Deletes an existing Call model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -152,15 +180,15 @@ class UserCallController extends Controller
     }
 
     /**
-     * Finds the UserCall model based on its primary key value.
+     * Finds the Call model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return UserCall the loaded model
+     * @return Call the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = UserCall::findOne($id)) !== null) {
+        if (($model = Call::findOne($id)) !== null) {
             return $model;
         }
 

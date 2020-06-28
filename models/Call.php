@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user_call".
@@ -17,11 +18,11 @@ use Yii;
  * @property float|null $cost_per_minute
  * @property string|null $duration
  *
- * @property UserAccount $account
- * @property UserAccount $mentor
- * @property UserAccount $sip
+ * @property User $account
+ * @property User $mentor
+ * @property User $sip
  */
-class UserCall extends \yii\db\ActiveRecord
+class Call extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -38,11 +39,12 @@ class UserCall extends \yii\db\ActiveRecord
     {
         return [
             [['account_id', 'mentor_id', 'success'], 'integer'],
+            ['cost_per_minute', 'double'],
             [['created_at', 'duration'], 'safe'],
             [['sip_id', 'city'], 'string', 'max' => 255],
-            [['account_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserAccount::className(), 'targetAttribute' => ['account_id' => 'id']],
-            [['mentor_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserAccount::className(), 'targetAttribute' => ['mentor_id' => 'id']],
-            [['sip_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserAccount::className(), 'targetAttribute' => ['sip_id' => 'sip_id']],
+            [['account_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['account_id' => 'id']],
+            [['mentor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['mentor_id' => 'id']],
+            [['sip_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['sip_id' => 'sip_id']],
         ];
     }
 
@@ -52,15 +54,15 @@ class UserCall extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'account_id' => 'Account ID',
-            'mentor_id' => 'Mentor ID',
-            'sip_id' => 'Sip ID',
-            'created_at' => 'Created At',
-            'city' => 'City',
-            'success' => 'Success',
+            'id'              => 'ID',
+            'account_id'      => 'Account ID',
+            'mentor_id'       => 'Mentor ID',
+            'sip_id'          => 'Sip ID',
+            'created_at'      => 'Created At',
+            'city'            => 'City',
+            'success'         => 'Success',
             'cost_per_minute' => 'Cost Per Minute',
-            'duration' => 'Duration',
+            'duration'        => 'Duration',
         ];
     }
 
@@ -71,7 +73,7 @@ class UserCall extends \yii\db\ActiveRecord
      */
     public function getAccount()
     {
-        return $this->hasOne(UserAccount::className(), ['id' => 'account_id']);
+        return $this->hasOne(User::class, ['id' => 'account_id']);
     }
 
     /**
@@ -81,7 +83,7 @@ class UserCall extends \yii\db\ActiveRecord
      */
     public function getMentor()
     {
-        return $this->hasOne(UserAccount::className(), ['id' => 'mentor_id']);
+        return $this->hasOne(User::class, ['id' => 'mentor_id']);
     }
 
     /**
@@ -91,6 +93,6 @@ class UserCall extends \yii\db\ActiveRecord
      */
     public function getSip()
     {
-        return $this->hasOne(UserAccount::className(), ['sip_id' => 'sip_id']);
+        return $this->hasOne(User::class, ['sip_id' => 'sip_id']);
     }
 }

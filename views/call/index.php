@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\UserCallSearch */
+/* @var $searchModel app\models\CallSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'User Calls';
@@ -43,4 +43,4 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 
-<?= Html::a('Fetch statistic', ['user-call/fetch-stat'], ['class' => 'btn btn-success']) ?>
+<?= Html::a('Fetch statistic', ['call/fetch-stat'], ['class' => 'btn btn-success']) ?>

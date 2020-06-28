@@ -1,8 +1,8 @@
 <?php
 
-namespace app\models;
+namespace app\helpers\api;
 
-class ZadarmaAPIRequester
+class Zadarma
 {
     const BASE_URL_PART = 'https://api.zadarma.com';
     const KEY = 'e5a43a341c0d0f824fb9';

@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\UserCall */
+/* @var $model app\models\Call */
 
 $this->title = 'Create User Call';
 $this->params['breadcrumbs'][] = ['label' => 'User Calls', 'url' => ['index']];
