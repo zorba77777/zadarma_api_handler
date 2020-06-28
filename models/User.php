@@ -14,11 +14,11 @@ use Yii;
  * @property string|null $phone
  * @property string|null $sip_id
  *
- * @property UserCall[] $userCalls
- * @property UserCall[] $userCalls0
- * @property UserCall[] $userCalls1
+ * @property Call[] $userCalls
+ * @property Call[] $userCalls0
+ * @property Call[] $userCalls1
  */
-class UserAccount extends \yii\db\ActiveRecord
+class User extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -34,7 +34,7 @@ class UserAccount extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'surname', 'email', 'phone', 'sip_id'], 'string', 'max' => 255],
+            [['name', 'surname', 'email', 'phone', 'sip_id'], 'string', 'max' => 55],
         ];
     }
 
@@ -44,12 +44,12 @@ class UserAccount extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'name' => 'Name',
+            'id'      => 'ID',
+            'name'    => 'Name',
             'surname' => 'Surname',
-            'email' => 'Email',
-            'phone' => 'Phone',
-            'sip_id' => 'Sip ID',
+            'email'   => 'Email',
+            'phone'   => 'Phone',
+            'sip_id'  => 'Sip ID',
         ];
     }
 
@@ -60,7 +60,7 @@ class UserAccount extends \yii\db\ActiveRecord
      */
     public function getUserCalls()
     {
-        return $this->hasMany(UserCall::className(), ['account_id' => 'id']);
+        return $this->hasMany(Call::class, ['account_id' => 'id']);
     }
 
     /**
@@ -70,7 +70,7 @@ class UserAccount extends \yii\db\ActiveRecord
      */
     public function getUserCalls0()
     {
-        return $this->hasMany(UserCall::className(), ['mentor_id' => 'id']);
+        return $this->hasMany(Call::class, ['mentor_id' => 'id']);
     }
 
     /**
@@ -80,6 +80,6 @@ class UserAccount extends \yii\db\ActiveRecord
      */
     public function getUserCalls1()
     {
-        return $this->hasMany(UserCall::className(), ['sip_id' => 'sip_id']);
+        return $this->hasMany(Call::class, ['sip_id' => 'sip_id']);
     }
 }

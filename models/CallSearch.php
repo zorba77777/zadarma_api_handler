@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\UserCall;
+use app\models\Call;
 
 /**
- * UserCallSearch represents the model behind the search form of `app\models\UserCall`.
+ * CallSearch represents the model behind the search form of `app\models\Call`.
  */
-class UserCallSearch extends UserCall
+class CallSearch extends Call
 {
     /**
      * {@inheritdoc}
@@ -17,7 +17,8 @@ class UserCallSearch extends UserCall
     public function rules()
     {
         return [
-            [['id', 'account_id', 'mentor_id', 'success', 'cost_per_minute'], 'integer'],
+            [['id', 'account_id', 'mentor_id', 'success'], 'integer'],
+            ['cost_per_minute', 'double'],
             [['sip_id', 'created_at', 'city', 'duration'], 'safe'],
         ];
     }
@@ -40,7 +41,7 @@ class UserCallSearch extends UserCall
      */
     public function search($params)
     {
-        $query = UserCall::find();
+        $query = Call::find();
 
         // add conditions that should always apply here
 
@@ -58,13 +59,13 @@ class UserCallSearch extends UserCall
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'account_id' => $this->account_id,
-            'mentor_id' => $this->mentor_id,
-            'created_at' => $this->created_at,
-            'success' => $this->success,
+            'id'              => $this->id,
+            'account_id'      => $this->account_id,
+            'mentor_id'       => $this->mentor_id,
+            'created_at'      => $this->created_at,
+            'success'         => $this->success,
             'cost_per_minute' => $this->cost_per_minute,
-            'duration' => $this->duration,
+            'duration'        => $this->duration,
         ]);
 
         $query->andFilterWhere(['like', 'sip_id', $this->sip_id])
